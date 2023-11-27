@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Typography, IconButton, Button, Card, CardContent, CardActions, Box, useMediaQuery,FormControl, MenuItem, Select } from '@mui/material';
 import { Delete, Edit, Archive, Unarchive } from '@mui/icons-material';
 import { createTask, deleteTask, getTasks, updateTask } from '../actions/tasks.actions';
-
+import CategoryForm from './CategoryForm';
 import TaskForm from './TaskForm';
-import { getCategories } from '../actions/categories.actions';
+import { createCategory, getCategories } from '../actions/categories.actions';
 
 function TaskList() {
     const dispatch = useDispatch();
@@ -15,6 +15,7 @@ function TaskList() {
     console.log("tareas",allTasks);
     const [showActiveTasks, setShowActiveTasks] = useState(true);
     const [dialogFormOpen, setDialogFormOpen] = useState(false);
+    const [dialogFormCateOpen, setDialogFormCateOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -43,6 +44,20 @@ function TaskList() {
         setShowActiveTasks(prevState => !prevState);
     };
 
+
+    const handleOpenDialoCategoria = (categoira)=>{
+        setDialogFormCateOpen(true)
+
+    }
+
+    const handleCloseDialogCategoria = () =>{
+        setDialogFormCateOpen(false)
+    }
+
+    const handleAddCategory = async(cate) =>{
+        console.log("la cate neuva", cate);
+        dispatch(createCategory(cate))
+    }
     
     const handleOpenDialog = (task, value) => {
         setSelectedTask(null)
@@ -168,7 +183,7 @@ function TaskList() {
                                         pb={1}
                                     >
                                         <Box>
-                                            {task.categories.map(category => (
+                                            {task.categories && task.categories.length >0 && task?.categories.map(category => (
                                                 <Button key={category.id} variant="outlined" onClick={() => handleDeleteCategory(task.id, category.id)}>
                                                     {category.name} <span style={{ marginLeft: '4px', cursor: 'pointer' }} onClick={() => handleDeleteCategory(task.id, category.id)}>❌</span>
                                                 </Button>
@@ -194,6 +209,10 @@ function TaskList() {
             <Button onClick={handleOpenDialog} variant="outlined" color="primary">
                 Agregar Tarea
             </Button>
+            <Button onClick={handleOpenDialoCategoria} variant="outlined" color="primary">
+                Agregar Categoria
+            </Button>
+            <CategoryForm open={dialogFormCateOpen} onClose={handleCloseDialogCategoria} onSubmit={handleAddCategory} />
             <TaskForm open={dialogFormOpen} onClose={handleCloseDialog} onSubmit={handleAddTask} selectedTask={selectedTask} />
             
         </div>
